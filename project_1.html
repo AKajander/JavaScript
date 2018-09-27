@@ -1,4 +1,4 @@
-<HTML>
+﻿<HTML>
 <style>
 body {
 	font-family: "Trebuchet MS", Helvetica, sans-serif;
@@ -196,11 +196,25 @@ function submitForm() {
 	if (email.search("@") < 0 || email == "") {
 		email.style.borderColor = "red";
 		document.getElementById("formEmailFeedback").innerHTML = "Please check the email address and rewrite it. It's either missing @ or the field is empty.";
+		return false;
 	} else if (responsible == "") {
 		responsible = "You";
+		alert("Your form is now correctly filled and it will be sent to further treatment. Thank you for your input.")
+		return true;
 	} else { 
 		alert("Your form is now correctly filled and it will be sent to further treatment. Thank you for your input.")
+		return true;
 	}
+}
+
+function showTask1Dropdown() {
+	var description = document.getElementById("task1Description");
+	description.style.display = "block";
+}
+
+function hideTask1Dropdown() {
+	var description = document.getElementById("task1Description");
+	description.style.display = "none";
 }
 
 </script>
@@ -212,7 +226,7 @@ function submitForm() {
 	<label>Add task: </label>
 	<input type="text" name="addTask" id="addTask"><span id="taskFeedback"></span>
 	<br>
-	<button id="taskButton" onclick="addValidatedTask()"></button>
+	<button id="taskButton" onclick="addValidatedTask()">Add</button>
 	<br>
 	<br>
 	<br>
@@ -256,17 +270,25 @@ function submitForm() {
 </form>
 <br>
 
-<!-- <div id="todoDropdown" class="dropdown">
+<div id="todoDropdown" class="dropdown">
 	<button class="dropdownButton" onclick="openDropdown()">Choose task</button>
 	<div id="dropdownTaskList" class="dropdown-content">
-		<p id="task1" value="task1" onclick="addNewItem()">Task 1</p>
+		<p id="task1" value="task1" onmouseover="showTask1Dropdown()" onmouseout="hideTask1Dropdown()">Task 1</p>
 		<p id="task2" value="task2" onclick="addNewItem()">Task 2</p>
 		<p id="task3" value="task3" onclick="addNewItem()">Task 3</p>
 		<p id="task4" value="task4" onclick="addNewItem()">Task 4</p>
 		<p id="task5" value="task5" onclick="addNewItem()">Task 5</p>
 		<p id="task6" value="task6" onclick="addNewItem()">Task 6</p>
 	</div>
-</div> -->
+</div>
+<div>
+	<p id="task1Description" style="display:none">Task 1 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
+	<p id="task2Description" style="display:none">Task 2 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
+	<p id="task3Description" style="display:none">Task 3 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
+	<p id="task4Description" style="display:none">Task 4 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
+	<p id="task5Description" style="display:none">Task 5 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
+	<p id="task6Description" style="display:none">Task 6 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
+</div>
 
 <div id="allCheckboxTasks">
 	<p>Here is list of tasks that should be done. Please check the box when you have completed the task.</p>
@@ -330,3 +352,5 @@ function submitForm() {
 </table>
 </body>
 </html>
+
+
