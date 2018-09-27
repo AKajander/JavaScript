@@ -1,0 +1,332 @@
+<HTML>
+<style>
+body {
+	font-family: "Trebuchet MS", Helvetica, sans-serif;
+	color: #333333;
+}
+
+table {
+	border-collapse: collapse;
+	border-color: black;
+	width: 50%;
+}
+
+tr, td {
+	width: 50%;
+	border: 1px solid #dddddd;
+	padding: 8px;
+}
+
+th {
+    text-align: left;
+}
+
+.div-side-by-side {
+	float: left;
+}
+
+.header-div-side-by-side {
+	height: 25px;
+	float: left;
+}
+
+/* Dropdown Button */
+.dropdownButton {
+	padding: 16px;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+}
+
+/* Dropdown button on hover & focus */
+.dropdownButton:hover, .dropdownButton:focus {
+	background-color: #ddd;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.todoDropdown {
+	position: relative;
+	display: inline-block;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropdown-content {
+	display: none;
+	position: absolute;
+	background-color: #f1f1f1;
+	min-width: 160px;
+	box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+	z-index: 1;
+}
+
+/* Links inside the dropdown */
+.dropdown-content p {
+	color: black;
+	padding: 12px 16px;
+	text-decoration: none;
+	display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropdown-content p:hover {
+	background-color: #ddd
+}
+
+/* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+.show {
+	display:block;
+}
+
+#checkboxList ul {
+	margin: 0;
+	list-style: none;
+	float: left;
+}
+
+</style>
+<script>
+
+/* Allows dropping in other elements */
+function allowDrop(event) {
+	event.preventDefault();
+}
+
+/* Gets dragged data and sets data type and value */
+function drag(event) {
+	event.dataTransfer.setData("text", event.target.id);
+}
+
+/* Gets dragged data and appends dragged element into drop element */
+function drop(event) {
+	event.preventDefault();
+	var data = event.dataTransfer.getData("text");
+	event.target.appendChild(document.getElementById(data));
+}
+
+/* Toggles between showing and not showing the dropdown content */
+function openDropdown() {
+	document.getElementById("dropdownTaskList").classList.toggle("show");
+}
+
+/* Closes dropdown when user clicks outside dropdown */
+window.onclick = function(event) {
+	if (!event.target.matches('.dropdownButton')) {
+
+		var dropdowns = document.getElementsByClassName("dropdown-content");
+		var i;
+		for (i = 0; i < dropdowns.length; i++) {
+			var openDropdown = dropdowns[i];
+			if (openDropdown.classList.contains('show')) {
+				openDropdown.classList.remove('show');
+			}
+		}
+	}
+}
+
+/* Replaces the original text */
+function showDoneCheckbox1() {
+	var checkbox = document.getElementById("checkbox1");
+	var oldText = document.getElementById("taskText1").innerHTML;
+	if (checkbox.checked == true) {
+		var newText = oldText.replace(oldText, " DONE!");
+		document.getElementById("taskText1").innerHTML = newText;
+	}
+}
+
+/* Shows "DONE" beside the task when second checkbox is clicked */
+function showDoneCheckbox2() {
+	var checkbox = document.getElementById("checkbox2");
+	var text = document.getElementById("text2");
+	if (checkbox.checked == true) {
+		text.style.display = "block";
+	} else {
+		text.style.display = "none";
+	}
+}
+
+/* Hides both tasks */
+function hideCheckbox3() {
+	var checkbox = document.getElementById("allCheckboxTasks");
+	if (checkbox.style.display === "none") {
+		checkbox.style.display = "block";
+	} else {
+		checkbox.style.display = "none";
+	}
+}
+
+/* Validates given input
+	- if input is incorrect, field's border change to red and error message is given
+	- if input is correct, value of the input is added into list as new li */
+
+function addValidatedTask() {
+	var task = document.getElementById("addTask").value;
+	if (task == "") {
+		document.getElementById("addTask").style.borderColor = "red";
+		var feedback = document.getElementById("taskFeedback").innerHTML = " Invalid input! The field is empty. Please write something.";
+	} else {
+    	var node = document.createElement("LI");
+    	var textnode = document.createTextNode(document.getElementById("addTask").value);
+    	node.appendChild(textnode);
+    	document.getElementById("taskList1").appendChild(node);
+    }
+}
+
+/* Validates given input
+	- if input is incorrect, field's border change to red and error message is given
+	- if input is correct, value of the input is added into list as new li */
+
+function addValidatedPriority() {
+	var priority = document.getElementById("addPriority").value;
+	if (isNaN(priority) || priority < 1 || priority > 5) {
+		document.getElementById("addPriority").style.borderColor = "red";
+		var feedback = document.getElementById("priorityFeedback").innerHTML = " Invalid input! Please choose the priority (1-5).";
+	} else {
+		var node = document.createElement("LI");
+		var textnode = document.createTextNode(document.getElementById("addPriority").value);
+		node.appendChild(textnode);
+		document.getElementById("taskList2").appendChild(node);
+	}
+}
+
+function submitForm() {
+	var formData = document.forms[0];
+	var task = formData.taskDropdown.value;
+	var responsible = formData.responsibleColumn.value;
+	var email = formData.emailColumn.value;
+	if (email.search("@") < 0 || email == "") {
+		email.style.borderColor = "red";
+		document.getElementById("formEmailFeedback").innerHTML = "Please check the email address and rewrite it. It's either missing @ or the field is empty.";
+	} else if (responsible == "") {
+		responsible = "You";
+	} else { 
+		alert("Your form is now correctly filled and it will be sent to further treatment. Thank you for your input.")
+	}
+}
+
+</script>
+<body>
+<h1>What To Do ?</h1>
+<p>This page helps you to organize your pending tasks.</p>
+
+<div>
+	<label>Add task: </label>
+	<input type="text" name="addTask" id="addTask"><span id="taskFeedback"></span>
+	<br>
+	<button id="taskButton" onclick="addValidatedTask()"></button>
+	<br>
+	<br>
+	<br>
+	<label>Add priority: </label>
+	<input type="number" name="addPriority" id="addPriority"><span id="priorityFeedback"></span>
+	<br>
+	<button id="priorityButton" onclick="addValidatedPriority()">Add</button>
+	<br>
+	<br>
+	<br>
+</div>
+<div>
+	<label>List of tasks:</label>
+	<ul id="taskList1">
+		<li>Task 1</li>
+		<li>Task 2</li>
+		<li>Task 3</li>
+	</ul>
+	<br>
+	<label>List of priorities:</label>
+	<ul id="taskList2">
+		<li>Priority 1</li>
+		<li>Priority 2</li>
+		<li>Priority 3</li>
+	</ul>
+</div>
+<br>
+<form name="taskForm" id="taskForm" onsubmit="return submitForm()">
+	<label>Task:</label>
+	<select type="taskDropdown" name="taskDropdown" id="taskDropdown">
+		<option value="task1">Task 1</option>
+		<option value="task2">Task 2</option>
+		<option value="task3">Task 3</option>
+		<option value="task4">Task 4</option>
+		<option value="task5">Task 5</option>
+		<option value="task6">Task 6</option>
+	</select>
+	<input type="responsibleColumn" name="responsibleColumn" id="responsibleColumn"><span id="formResponsibleFeedback"></span>
+	<input type="emailColumn" name="emailColumn" id="emailColumn"><span id="formEmailFeedback"></span>
+	<input type="submit" name="submit">
+</form>
+<br>
+
+<!-- <div id="todoDropdown" class="dropdown">
+	<button class="dropdownButton" onclick="openDropdown()">Choose task</button>
+	<div id="dropdownTaskList" class="dropdown-content">
+		<p id="task1" value="task1" onclick="addNewItem()">Task 1</p>
+		<p id="task2" value="task2" onclick="addNewItem()">Task 2</p>
+		<p id="task3" value="task3" onclick="addNewItem()">Task 3</p>
+		<p id="task4" value="task4" onclick="addNewItem()">Task 4</p>
+		<p id="task5" value="task5" onclick="addNewItem()">Task 5</p>
+		<p id="task6" value="task6" onclick="addNewItem()">Task 6</p>
+	</div>
+</div> -->
+
+<div id="allCheckboxTasks">
+	<p>Here is list of tasks that should be done. Please check the box when you have completed the task.</p>
+	<input type="checkbox" id="checkbox1" onclick="showDoneCheckbox1()"><span id="taskText1"> this is fun task</span>
+	<br>
+	<input type="checkbox" id="checkbox2" onclick="showDoneCheckbox2()"><span id="taskText2"> this is another fun task</span><span id="text2" style="display:none"> Excellent! The task is now done.</span>
+	<br>
+</div>
+<div>
+	<input type="checkbox" id="checkbox3" onclick="hideCheckbox3()"><span id="taskText3"> All tasks are done.</span>
+</div>
+<br></br>
+<br></br>
+<br></br>
+<p>These homeworks you have to do every week but at least you can choose the time when you want to do them.</p>
+<p>Just drag and drop the homework into suitable time period.</p>
+<table id="vertical-1">
+	<tr>
+		<th></th>
+		<th>Aamulla:</th>
+		<th>Illalla:</th>
+	</tr>
+	<tr>
+		<th>Maanantai</th>
+		<td id="td1" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<p id="dragHomework1" draggable="true" ondragstart="drag(event)">JavaScript homework</p>
+		</td>
+		<td id="td2" ondrop="drop(event)" ondragover="allowDrop(event)">
+		</td>
+	</tr>
+	<tr>
+		<th>Tiistai</th>
+		<td id="td3" ondrop="drop(event)" ondragover="allowDrop(event)">
+		</td>
+		<td id="td4" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<p id="dragHomework2" draggable="true" ondragstart="drag(event)">Java homework</p>
+		</td>
+	</tr>
+	<tr>
+		<th>Keskiviikko</th>
+		<td id="td5" ondrop="drop(event)" ondragover="allowDrop(event)">
+		</td>
+		<td id="td6" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<p id="dragHomework3" draggable="true" ondragstart="drag(event)">SQL homework</p>
+		</td>
+	<tr>
+		<th>Torstai</th>
+		<td id="td7" ondrop="drop(event)" ondragover="allowDrop(event)">
+		</td>
+		<td id="td8" ondrop="drop(event)" ondragover="allowDrop(event)">
+			<p id="dragHomework4" draggable="true" ondragstart="drag(event)">Digital marketing homework</p>
+		</td>
+	</tr>
+	<tr>
+		<th>Perjantai</th>
+		<td id="td9" ondrop="drop(event)" ondragover="allowDrop(event)">
+		</td>
+		<td id="td10" ondrop="drop(event)" ondragover="allowDrop(event)">
+		</td>
+	</tr>
+</table>
+</body>
+</html>
