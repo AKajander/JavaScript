@@ -90,6 +90,26 @@
 			list-style: none;
 			float: left;
 		}
+		
+		.container {
+			width: 100%;
+			height: 200px;
+			margin: auto;
+			padding: 10px;
+		}
+		
+		.dropdown-div-1 {
+			width: 30%;
+			height: 200px;
+			float: left;
+		}
+		
+		.dropdown-div-2 {
+			width: 30%;
+			height: 200px;
+			float: right;
+		}
+		
 	</style>
 	<script language="javascript" type="text/javascript">
 
@@ -327,21 +347,27 @@
 	</script>
 </head>
 <body onload="blinkTaskInput()">
-	<h1>What To Do ?</h1>
-	<p>This page helps you to organize your pending tasks.</p>
-	<h4 id="firstSubHeader">You can see the descriptions of tasks by clicking the Choose task button and hovering mouse over the specific task.</h4>
-		<div class="container">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12">
+				<h1>What To Do ?</h1>
+				<h4>This page helps you to organize your pending tasks.</h4>
+				<p id="firstSubHeader">You can see the descriptions of tasks by clicking the Choose task button and hovering mouse over the specific task. The task description is shown on the right side of the button.</p>
+			</div>
+		</div>
+	</div>
+	<div class="container">
 		<div class="row">
 			<div class="col-md-6">
-				<div id="todoDropdown" class="dropdown">
+				<div id="todoDropdown" class="dropdown-div-1">
 					<button class="dropdownButton" onclick="openDropdown()">Choose task</button>
 					<div id="dropdownTaskList" class="dropdown-content">
 						<p id="task1" value="task1" onmouseover="showTask1Dropdown()" onmouseout="hideTask1Dropdown()">Task 1</p>
-						<p id="task2" value="task2" onmouseover="showTask1Dropdown()" onmouseout="hideTask1Dropdown()">Task 2</p>
-						<p id="task3" value="task3" onmouseover="showTask1Dropdown()" onmouseout="hideTask1Dropdown()">Task 3</p>
-						<p id="task4" value="task4" onmouseover="showTask1Dropdown()" onmouseout="hideTask1Dropdown()">Task 4</p>
-						<p id="task5" value="task5" onmouseover="showTask1Dropdown()" onmouseout="hideTask1Dropdown()">Task 5</p>
-						<p id="task6" value="task6" onmouseover="showTask1Dropdown()" onmouseout="hideTask1Dropdown()">Task 6</p>
+						<p id="task2" value="task2" onmouseover="showTask2Dropdown()" onmouseout="hideTask2Dropdown()">Task 2</p>
+						<p id="task3" value="task3" onmouseover="showTask3Dropdown()" onmouseout="hideTask3Dropdown()">Task 3</p>
+						<p id="task4" value="task4" onmouseover="showTask4Dropdown()" onmouseout="hideTask4Dropdown()">Task 4</p>
+						<p id="task5" value="task5" onmouseover="showTask5Dropdown()" onmouseout="hideTask5Dropdown()">Task 5</p>
+						<p id="task6" value="task6" onmouseover="showTask6Dropdown()" onmouseout="hideTask6Dropdown()">Task 6</p>
 					</div>
 				</div>
 			</div>
@@ -350,7 +376,7 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-md-6">
-				<div>
+				<div id="task-descriptions" class="dropdown-div-2">
 					<p id="task1Description" class="dropdown-description-content" style="display:none">Task 1 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
 					<p id="task2Description" style="display:none">Task 2 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
 					<p id="task3Description" style="display:none">Task 3 is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text</p>
@@ -363,42 +389,36 @@
 	</div>
 	<br>
 	<br>
-	<br>
-	<br>
-	<br>
-	<br>
-	<br>
-	<div>
-		<label>Here you can add task to the list shown below.</label>
-		<input type="text" name="addTask" id="addTask" value="Enter task here.." onfocus="doFocus()" onblur="continueBlinkTaskInput()"><span id="taskFeedback"></span>
-		<br>
-		<button id="taskButton" onclick="addValidatedTask()">Add</button>
-		<br>
-		<br>
-		<br>
-		<label>Here you can add priorities to the list shown below.</label>
-		<input type="number" name="addPriority" id="addPriority"><span id="priorityFeedback"></span>
-		<br>
-		<button id="priorityButton" onclick="addValidatedPriority()">Add</button>
-		<br>
-		<br>
-		<br>
-	</div>
-	<div>
-		<label>List of tasks:</label>
-		<ul id="taskList1">
-			<li>Task 1</li>
-			<li>Task 2</li>
-			<li>Task 3</li>
-		</ul>
-		<br>
-		<label>List of priorities:</label>
-		<ul id="taskList2">
-			<li>Priority 1</li>
-			<li>Priority 2</li>
-			<li>Priority 3</li>
-		</ul>
-	</div>
+				<div id="task-list" class="task-list">
+					<p>Here you can add task to the list shown below. First list is for tasks and the second list is for priorities. Please notice that you must add tasks and priorities in same order otherwise this is useless.</p>
+					<label>Add task to the list shown below.</label>
+					<input type="text" name="addTask" id="addTask" value="Enter task here.." onfocus="doFocus()" onblur="continueBlinkTaskInput()"><span id="taskFeedback"></span>
+					<br>
+					<button id="taskButton" onclick="addValidatedTask()">Add</button>
+					<br>
+					<br>
+					<br>
+					<label>Add priority to the list shown below.</label>
+					<input type="number" name="addPriority" id="addPriority"><span id="priorityFeedback"></span>
+					<button id="priorityButton" onclick="addValidatedPriority()">Add to list</button>
+					<button id="priority-table-button" onclick="addValidatedPriority()">Add to table</button>
+					<br>
+					<br>
+					<br>
+					<label>List of tasks:</label>
+					<ul id="taskList1">
+						<li>Task 1</li>
+						<li>Task 2</li>
+						<li>Task 3</li>
+					</ul>
+					<br>
+					<label>List of priorities:</label>
+					<ul id="taskList2">
+						<li>Priority 1</li>
+						<li>Priority 2</li>
+						<li>Priority 3</li>
+					</ul>
+				</div>
 	<br>
 	<form name="taskForm" id="taskForm" onsubmit="return submitForm()">
 		<p>Task information</p>
