@@ -1,0 +1,122 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script>
+	var urlStations = "https://rata.digitraffic.fi/api/v1/metadata/stations";
+	var xmlhttpStations = new XMLHttpRequest();
+	xmlhttpStations.open("GET", urlStations, true);
+	xmlhttpStations.send();
+	
+	var urlTrains = "https://rata.digitraffic.fi/api/v1/live-trains/station/departureStation/HKI";
+	var xmlhttpTrains = new XMLHttpRequest();
+	xmlhttpTrains.open("GET", urlTrains, true);
+	xmlhttpTrains.send();
+	
+	xmlhttpStations.onreadystatechange = function() {
+		if (xmlhttpStations.readyState == 4 && xmlhttpStations.status == 200) {
+			//document.getElementById("train-content").innerHTML = xmlhttp.responseText;
+			// Receive the response as JSON and parse it into a JS variable
+			jsonStations = JSON.parse(xmlhttpStations.responseText);
+			
+			// Now received JSON can be used as a JS variable
+			//console.log(jsonObject[0]);
+			// Stored in data variable
+			
+			var stationData = jsonStations;
+	// Loop that run through JSON data array and all data will be collected to out variable
+			var stationOut = "<form>";
+			stationOut += '<select id="departure-station">';
+		
+			for (var i=0; i < stationData.length; i++) {
+		// For each loop round, we will create a new table for <tr> -tag and append (+=)
+		// the data to existing out variable
+		// For each cell, we will output data fields from JSON
+				stationOut += '<option>' + stationData[i].stationShortCode + " " + stationData[i].stationName + '</option>';
+			}
+			
+			stationOut += '</select>';
+			stationOut+="</form>";
+		
+			document.getElementById("tabledata").innerHTML = stationOut;
+		}
+	}
+		
+	xmlhttpTrains.onreadystatechange = function() {
+		if (xmlhttpTrains.readyState == 4 && xmlhttpTrains.status == 200) {
+			//document.getElementById("train-content").innerHTML = xmlhttp.responseText;
+			// Receive the response as JSON and parse it into a JS variable
+			jsonTrains = JSON.parse(xmlhttpTrains.responseText);
+			// Now received JSON can be used as a JS variable
+			//console.log(jsonObject[0]);
+			// Stored in data variable
+			
+			var trainsData = jsonTrains;
+	// Loop that run through JSON data array and all data will be collected to out variable
+			var trainsOut = "<form>";
+			trainsOut += '<select id="departureStation">';
+		
+			for (var i=0; i < trainsData.length; i++) {
+		// For each loop round, we will create a new table for <tr> -tag and append (+=)
+		// the data to existing out variable
+		// For each cell, we will output data fields from JSON
+				trainsOut += '<option>' + trainsData[i].stationShortCode + " " + trainsData[i].stationName + '</option>';
+			}
+			
+			trainsOut += '</select>';
+			trainsOut+="</form>";
+		
+			document.getElementById("tabledata").innerHTML = trainsOut;
+		}
+	}
+	
+	var departureStation = document.getElementById("departure-station");
+	
+	
+</script>
+</head>
+<body>
+<header class="header header--transparent">
+<div class="content">
+	<div class="row">
+		<div class="col-xs-6">
+		</div>
+	</div>
+</div>
+<body>
+<content>
+	<section>
+		<div>
+			<div class="row">
+				<div class="col-xs">
+					<h1></h1>
+					<p></p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<div id="train-content">
+			<div class="row">
+				<div class="col-xs">
+					<form>
+						<p></p>
+						<input></input>
+						<p></p>
+						<input></input>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<div id="tabledata">
+			<div class="row">
+				<div class="col-xs">
+				</div>
+			</div>
+		</div>
+	</section>
+</content>
+</body>
+</html>
