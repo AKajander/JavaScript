@@ -13,29 +13,16 @@ xmlHttpTrains.send();
 
 xmlHttpTrains.onreadystatechange = function() {
 	if (xmlHttpTrains.readyState == 4 && xmlHttpTrains.status == 200) {
-		// Receive the response as JSON and parse it into a JS variable
-		jsonTrains = JSON.parse(xmlHttpTrains.responseText);
-
-		// Now received JSON can be used as a JS variable
-		// Stored in data variable
-
-		var trainData = jsonTrains;
-		// Loop that run through JSON data array and all data will be collected to out variable
-
+		var trains = JSON.parse(xmlHttpTrains.responseText);
+		var trainData = trains;
 		var trainOut = "<ul>";
 
-		for (var i=0; i < trainData.length; i++) {
-			// For each loop round, we will create a new table for <tr> -tag and append (+=)
-			// the data to existing out variable
-			// For each cell, we will output data fields from JSON
-			trainOut += '<li>' + trainData[i].commuterLineId + '</li>';
-
-			trainOut += '</li>';
+		for (var i = 0; i < trainData.length; i++) {
+			trainOut += '<li>' + trainData[i].trainNumber + '</li>';
 		}
-		
-		trainOut+="</ul>";
+		trainOut += "</ul";
 
-		document.getElementById("trains-data").innerHTML = trainOut;
+		document.getElementById("trains-data");
 	}
 }
 
@@ -92,10 +79,10 @@ xmlHttpTrains.onreadystatechange = function() {
 		</div>
 	</section>
 	<section>
-		<div id="trains-data">
+		<div>
 			<div class="row">
 				<div class="col-xs">
-					<div>
+					<div id="trains-data">
 					</div>
 				</div>
 			</div>
