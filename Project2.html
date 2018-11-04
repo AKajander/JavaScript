@@ -1,78 +1,89 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<script>
+<script type="text/javascript" language="javascript">
+
 	var urlStations = "https://rata.digitraffic.fi/api/v1/metadata/stations";
-	var xmlhttpStations = new XMLHttpRequest();
-	xmlhttpStations.open("GET", urlStations, true);
-	xmlhttpStations.send();
-	
-	var urlTrains = "https://rata.digitraffic.fi/api/v1/live-trains/station/departureStation/HKI";
-	var xmlhttpTrains = new XMLHttpRequest();
-	xmlhttpTrains.open("GET", urlTrains, true);
-	xmlhttpTrains.send();
-	
-	xmlhttpStations.onreadystatechange = function() {
-		if (xmlhttpStations.readyState == 4 && xmlhttpStations.status == 200) {
-			//document.getElementById("train-content").innerHTML = xmlhttp.responseText;
-			// Receive the response as JSON and parse it into a JS variable
-			jsonStations = JSON.parse(xmlhttpStations.responseText);
-			
-			// Now received JSON can be used as a JS variable
-			//console.log(jsonObject[0]);
-			// Stored in data variable
-			
-			var stationData = jsonStations;
-	// Loop that run through JSON data array and all data will be collected to out variable
+	var xmlHttpStations = new XMLHttpRequest();
+	xmlHttpStations.open("GET", urlStations, true);
+	xmlHttpStations.send();
+
+	xmlHttpStations.onreadystatechange = function() {
+		if (xmlHttpStations.readyState == 4 && xmlHttpStations.status == 200) {
+			// Receive the response as JSON and parse it into a variable
+			jsonStations = JSON.parse(xmlHttpStations.responseText)
+			// Received JSON can be used as a variable (store data in variable)
+			var stationDataDeparture = jsonStations;
+			// Loop JSON data array and all data will be collected out to variable
 			var stationOut = "<form>";
 			stationOut += '<select id="departure-station">';
+
+			for (var i = 0; i < stationDataDeparture.length; i++) {
+				// Each round will create new option tag and append the data to existing out variable
+				stationOut += '<option>' + stationDataDeparture[i].stationShortCode + " " + stationDataDeparture[i].stationName + '</option>';
+			}
+
+			stationOut += '</select';
+			stationOut += '</form';
+
+			document.getElementById("station-data-departure").innerHTML = stationOut;
+
+			var stationDataArrive = jsonStations;
+			var stationOut = "<form>";
+			stationOut += '<select id="arrive-station">';
 		
-			for (var i=0; i < stationData.length; i++) {
-		// For each loop round, we will create a new table for <tr> -tag and append (+=)
-		// the data to existing out variable
-		// For each cell, we will output data fields from JSON
-				stationOut += '<option>' + stationData[i].stationShortCode + " " + stationData[i].stationName + '</option>';
+			for (var i=0; i < stationDataArrive.length; i++) {
+				stationOut += '<option>' + stationDataArrive[i].stationShortCode + " " + stationDataArrive[i].stationName + '</option>';
 			}
 			
 			stationOut += '</select>';
 			stationOut+="</form>";
 		
-			document.getElementById("tabledata").innerHTML = stationOut;
-		}
-	}
+			document.getElementById("station-data-arrive").innerHTML = stationOut;
+
+			var departureStationResult = document.getElementById("departure-station").value;
+			var arriveStationResult = document.getElementById("arrive-station").value;
+			var departureStation = departureStationResult.substring(0,3);
+			var arriveStation = arriveStationResult.substring(0,3);
+
+
+			var urlTrains = "https://rata.digitraffic.fi/api/v1/live-trains/station/"+departureStation+"/"+arriveStation+"?include_nonstopping=false&limit=1";
+			var xmlHttpTrains = new XMLHttpRequest();
+			xmlHttpTrains.open("GET", urlTrains, true);
+			xmlHttpTrains.send();
+
+			xmlHttpTrains.onreadystatechange = function() {
+				if (xmlHttpTrains.readyState == 4 && xmlHttpTrains.status == 200) {
+					// Receive the response as JSON and parse it into a JS variable
+					jsonTrains = JSON.parse(xmlHttpTrains.responseText);
+	
+					// Now received JSON can be used as a JS variable
+					// Stored in data variable
 		
-	xmlhttpTrains.onreadystatechange = function() {
-		if (xmlhttpTrains.readyState == 4 && xmlhttpTrains.status == 200) {
-			//document.getElementById("train-content").innerHTML = xmlhttp.responseText;
-			// Receive the response as JSON and parse it into a JS variable
-			jsonTrains = JSON.parse(xmlhttpTrains.responseText);
-			// Now received JSON can be used as a JS variable
-			//console.log(jsonObject[0]);
-			// Stored in data variable
+					var trainData = jsonTrains;
+					// Loop that run through JSON data array and all data will be collected to out variable
+
+					function searchTrains() {
+						var trainOut = "<ul>";
+						trainOut += '<li>';
+		
+						for (var i=0; i < trainData.length; i++) {
+							// For each loop round, we will create a new table for <tr> -tag and append (+=)
+							// the data to existing out variable
+							// For each cell, we will output data fields from JSON
+							trainOut += '<li>' + trainData[i].commuterLineId + '</li>';
+						}
 			
-			var trainsData = jsonTrains;
-	// Loop that run through JSON data array and all data will be collected to out variable
-			var trainsOut = "<form>";
-			trainsOut += '<select id="departureStation">';
+						trainOut += '</li>';
+						trainOut+="</ul>";
 		
-			for (var i=0; i < trainsData.length; i++) {
-		// For each loop round, we will create a new table for <tr> -tag and append (+=)
-		// the data to existing out variable
-		// For each cell, we will output data fields from JSON
-				trainsOut += '<option>' + trainsData[i].stationShortCode + " " + trainsData[i].stationName + '</option>';
+						document.getElementById("trains-data").innerHTML = trainOut;
+					}
+				}
 			}
-			
-			trainsOut += '</select>';
-			trainsOut+="</form>";
-		
-			document.getElementById("tabledata").innerHTML = trainsOut;
 		}
 	}
-	
-	var departureStation = document.getElementById("departure-station");
-	
-	
+
 </script>
 </head>
 <body>
@@ -89,30 +100,48 @@
 		<div>
 			<div class="row">
 				<div class="col-xs">
-					<h1></h1>
-					<p></p>
 				</div>
 			</div>
 		</div>
 	</section>
 	<section>
-		<div id="train-content">
+		<div id="station-data-departure">
 			<div class="row">
 				<div class="col-xs">
 					<form>
-						<p></p>
-						<input></input>
-						<p></p>
-						<input></input>
+					
 					</form>
 				</div>
 			</div>
 		</div>
 	</section>
 	<section>
-		<div id="tabledata">
+		<div id="station-data-arrive">
 			<div class="row">
 				<div class="col-xs">
+					<form>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<div>
+			<div class="row">
+				<div class="col-xs">
+					<form>
+						<button type="button" value="Search" onclick="searchTrains()">Search</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section>
+		<div id="trains-data">
+			<div class="row">
+				<div class="col-xs">
+					<div>
+					</div>
 				</div>
 			</div>
 		</div>
