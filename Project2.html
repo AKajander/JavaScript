@@ -18,21 +18,20 @@
 
 	xmlhttpStations.onreadystatechange = function() {
 		if (xmlhttpStations.readyState == 4 && xmlhttpStations.status == 200) {
+
 			// Receive the response as JSON and parse it into a JS variable
 			jsonStations = JSON.parse(xmlhttpStations.responseText);
 
-			// Now received JSON can be used as a JS variable
-			// Stored in data variable
-
+			// Store in data variable
 			var stationDataDeparture = jsonStations;
-	// Loop that run through JSON data array and all data will be collected to out variable
+
+			// Loop through JSON data array and all data will be collected to stationOut variable
 			var stationOut = "<form>";
 			stationOut += '<select>';
 
 			for (var i=0; i < stationDataDeparture.length; i++) {
-		// For each loop round, we will create a new table for <tr> -tag and append (+=)
-		// the data to existing out variable
-		// For each cell, we will output data fields from JSON
+
+				// Each loop round will create a new option for select tag and append to stationOut variable
 				stationOut += '<option  id="departure-station">' + stationDataDeparture[i].stationShortCode + " " + stationDataDeparture[i].stationName + '</option>';
 			}
 
@@ -42,14 +41,13 @@
 			document.getElementById("station-data-departure").innerHTML = stationOut;
 
 			var stationDataArrive = jsonStations;
-	// Loop that run through JSON data array and all data will be collected to out variable
+
+			// Loop through JSON data array and all data will be collected to stationOut variable
 			var stationOut = "<form>";
 			stationOut += '<select>';
 
 			for (var i=0; i < stationDataArrive.length; i++) {
-		// For each loop round, we will create a new table for <tr> -tag and append (+=)
-		// the data to existing out variable
-		// For each cell, we will output data fields from JSON
+				// Each loop round will create a new option for select tag and append to stationOut variable
 				stationOut += '<option  id="arrive-station">' + stationDataArrive[i].stationShortCode + " " + stationDataArrive[i].stationName + '</option>';
 			}
 
@@ -60,20 +58,64 @@
 	}
 }
 
+
+// jQuery datepicker and today's date is default
+
 $( function() {
 	$("#datepicker").datepicker().datepicker("setDate", new Date());
 } );
 
-var date = document.getElementById("datepicker").value;
-var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/trains/" + date;
+
+// Pick chosen date and use in url BUT IT DOESN'T WORK AND I CAN'T FIND THE REASON WHY
+
+//var date = document.getElementById("datepicker").value;
+var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/metadata/train-types";
+
+
+// jQuery ajax is used to get trains by date
 
 $("get-trains-by-date-button").click(function(){
 	$.ajax({
 		url: trainsByDateUrl,
 		success: function(result){
   	$("#trains-result").html(result);
-  }});
+	}});
 });
+
+
+// Get stations list from rata.digitraffic.fi and show them in dropdownlist (two dropdownlists for departure and arrive)
+
+var xmlhttpTrains = new XMLHttpRequest();
+xmlhttpTrains.open("GET", trainsByDateUrl, true);
+xmlhttpTrains.send();
+
+xmlhttpTrains.onreadystatechange = function() {
+	if (xmlhttpTrains.readyState == 4 && xmlhttpTrains.status == 200) {
+
+		// Receive the response as JSON and parse it into a JS variable
+		jsonTrains = JSON.parse(xmlhttpTrains.responseText);
+
+		// Store in data variable
+		var trainData = jsonTrains;
+
+		// Loop through JSON data array and all data will be collected to stationOut variable
+		var trainOut = "<table>";
+
+		for (var i=0; i < trainData.length; i++) {
+
+			// Each loop round will create a new option for tr and td tags and append to stationOut variable
+			trainOut += '<tr>';
+			trainOut += '<td>' + trainData[i].name + '</td>';
+			trainOut += '<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>'
+			trainOut += '<td>' + trainData[i].trainCategory.name + '</td>';
+			trainOut += '</tr>';
+		}
+
+		trainOut += "</table>";
+
+		document.getElementById("trains-data").innerHTML = trainOut;
+		}
+	}
 
 </script>
 </head>
@@ -94,47 +136,56 @@ $("get-trains-by-date-button").click(function(){
 	<div class="page-header">
 		<div class="row">
 			<div class="col-xs-6">
+				<div>
+					<div class="col-xs">
+					</div>
+				</div>
+				<div>
+					<h4><b>List of train stations <small> - there was meant to be a search where you can find trains operating between
+					chosen stations but I can't save (stations) values into js variable.</small></b></h4>
+					<div id="station-data-departure">
+						<div class="col-xs">
+						</div>
+					</div>
+				</div>
+				<div id="station-data-arrive">
+					<div class="col-xs">
+					</div>
+				</div>
+			<div>
+				<div class="col-xs">
+					<form>
+						<input id="get-trains-button" type="button" value="Search">
+					</form>
+				</div>
 			</div>
 		</div>
+		<div class="row">
 			<div>
-					<div class="col-xs">
+				<div class="col-xs">
+					<div id="content">
+						<h4><b>Search trains by date <small> - there was meant to be a search where you can find trains operating at chosen
+						time but I can't save the (date) value into js variable.</small></b></h4>
+						<label>Choose date: </label>
+						<input type="text" id="datepicker">
+						<input id="get-trains-by-date-button" type="button" value="Search trains by date">
 					</div>
 				</div>
-			<div id="station-data-departure">
-					<div class="col-xs">
-							<p id="chosen-departure-station"></p>
-				</div>
-			</div>
-			<div id="station-data-arrive">
-					<div class="col-xs">
-							<p id="chosen-arrive-station"></p>
-					</div>
-				</div>
-			<div>
-					<div class="col-xs">
-						<form>
-							<input id="get-trains-button" type="button" value="Search">
-						</form>
-					</div>
-			</div>
-			<div id="trains-data">
-					<div class="col-xs">
-						<div id="content">
-							<label>Choose date: </label>
-							<input type="text" id="datepicker">
-						</div>
-					</div>
 			</div>
 			<div>
-					<div class="col-xs">
-						<form>
-							<input id="get-trains-by-date-button" type="button" value="Search">
-						</form>
-						<div id="trains-result">
-						</div>
+				<div class="col-xs">
+					<div id="trains-result">
 					</div>
+				</div>
 			</div>
-	</div>
+		</div>
+		<div class="row">
+			<div>
+				<h4><b>Train types list <small> - lists any train types that are used at the moment</small></b></h4>
+				<div id="trains-data">
+				</div>
+			</div>
+		</div>
 	</div>
 </body>
 </html>
