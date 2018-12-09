@@ -2,7 +2,13 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.3.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script>
+
+	// Get stations list from rata.digitraffic.fi and show them in dropdownlist (two dropdownlists for departure and arrive)
+
 	var urlStations = "https://rata.digitraffic.fi/api/v1/metadata/stations";
 	var xmlhttpStations = new XMLHttpRequest();
 	xmlhttpStations.open("GET", urlStations, true);
@@ -19,13 +25,13 @@
 			var stationDataDeparture = jsonStations;
 	// Loop that run through JSON data array and all data will be collected to out variable
 			var stationOut = "<form>";
-			stationOut += '<select id="departure-station">';
+			stationOut += '<select>';
 
 			for (var i=0; i < stationDataDeparture.length; i++) {
 		// For each loop round, we will create a new table for <tr> -tag and append (+=)
 		// the data to existing out variable
 		// For each cell, we will output data fields from JSON
-				stationOut += '<option>' + stationDataDeparture[i].stationShortCode + " " + stationDataDeparture[i].stationName + '</option>';
+				stationOut += '<option  id="departure-station">' + stationDataDeparture[i].stationShortCode + " " + stationDataDeparture[i].stationName + '</option>';
 			}
 
 			stationOut += '</select>';
@@ -36,122 +42,73 @@
 			var stationDataArrive = jsonStations;
 	// Loop that run through JSON data array and all data will be collected to out variable
 			var stationOut = "<form>";
-			stationOut += '<select id="arrive-station">';
+			stationOut += '<select>';
 
 			for (var i=0; i < stationDataArrive.length; i++) {
 		// For each loop round, we will create a new table for <tr> -tag and append (+=)
 		// the data to existing out variable
 		// For each cell, we will output data fields from JSON
-				stationOut += '<option>' + stationDataArrive[i].stationShortCode + " " + stationDataArrive[i].stationName + '</option>';
+				stationOut += '<option  id="arrive-station">' + stationDataArrive[i].stationShortCode + " " + stationDataArrive[i].stationName + '</option>';
 			}
 
 			stationOut += '</select>';
 			stationOut += "</form>";
 
 			document.getElementById("station-data-arrive").innerHTML = stationOut;
-		}
-	}
-
-	function searchTrains() {
-		var departureStation = document.getElementById("departure-station").value;
-		var arriveStation = document.getElementById("arrive-station").value;
-		var urlTrains = "https://rata.digitraffic.fi/api/v1/live-trains/station/" + departureStation + "/" + arriveStation + "?include_nonstopping=false&limit=1";
-		var xmlhttpTrains = new XMLHttpRequest();
-		xmlhttpTrains.open("GET", urlTrains, true);
-		xmlhttpTrains.send();
-
-		xmlhttpTrains.onreadystatechange = function() {
-			if (xmlhttpTrains.readyState == 4 && xmlhttpTrains.status == 200) {
-				// Receive the response as JSON and parse it into a JS variable
-				jsonTrains = JSON.parse(xmlhttpTrains.responseText);
-
-				// Now received JSON can be used as a JS variable
-				// Stored in data variable
-
-				var trainData = jsonTrains;
-				// Loop that run through JSON data array and all data will be collected to out variable
-				var trainOut = "<ul>";
-				trainOut += '<li>';
-
-				for (var i=0; i < trainData.length; i++) {
-				// For each loop round, we will create a new table for <tr> -tag and append (+=)
-				// the data to existing out variable
-				// For each cell, we will output data fields from JSON
-					trainOut += '<li>' + trainData[i].commuterLineId + '</li>';
-			}
-
-			trainOut += '</li>';
-			trainOut += "</ul>";
-
-			document.getElementById("trains-data").innerHTML = trainOut;
-		}
+			document.getElementById("chosen-departure-station").innerHTML = document.getElementById("departure-station").value;
+			document.getElementById("chosen-arrive-station").innerHTML = document.getElementById("arrive-station").value;
 	}
 }
 
 </script>
 </head>
 <body>
-<header class="header header--transparent">
-<div class="content">
-	<div class="row">
-		<div class="col-xs-6">
-		</div>
+	<div class="container-fluid">
+			<h1 style="margin:100px">Trains <small> some information about trains.</small></h1>
 	</div>
-</div>
-<body>
-<content>
-	<section>
-		<div>
-			<div class="row">
-				<div class="col-xs">
-
-
-				</div>
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    </div>
+  </div>
+</nav>
+<header class="header header--transparent">
+	<div class="container">
+	<div class="page-header">
+		<div class="row">
+			<div class="col-xs-6">
 			</div>
 		</div>
-	</section>
-	<section>
-		<div id="station-data-departure">
-			<div class="row">
-				<div class="col-xs">
-					<form>
-
-					</form>
-				</div>
-			</div>
-		</div>
-	</section>
-	<section>
-		<div id="station-data-arrive">
-			<div class="row">
-				<div class="col-xs">
-					<form>
-					</form>
-				</div>
-			</div>
-		</div>
-	</section>
-	<section>
-		<div>
-			<div class="row">
-				<div class="col-xs">
-					<form>
-						<input type="button" value="Search" onclick="searchTrains()">
-					</form>
-				</div>
-			</div>
-		</div>
-	</section>
-	<section>
-		<div id="trains-data">
-			<div class="row">
-				<div class="col-xs">
-					<div id="content">
+			<div>
+					<div class="col-xs">
 					</div>
 				</div>
+			<div id="station-data-departure">
+					<div class="col-xs">
+							<p id="chosen-departure-station"></p>
+				</div>
 			</div>
-		</div>
-	</section>
-</content>
+			<div id="station-data-arrive">
+					<div class="col-xs">
+							<p id="chosen-arrive-station"></p>
+					</div>
+				</div>
+			<div>
+					<div class="col-xs">
+						<form>
+							<input id="get-trains-button" type="button" value="Search">
+						</form>
+					</div>
+			</div>
+			<div id="trains-data">
+					<div class="col-xs">
+						<div id="content">
+						</div>
+					</div>
+			</div>
+	</div>
+	</div>
 </body>
 </html>
