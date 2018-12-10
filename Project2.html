@@ -69,7 +69,8 @@ $( function() {
 // Pick chosen date and use in url BUT IT DOESN'T WORK AND I CAN'T FIND THE REASON WHY
 
 //var date = document.getElementById("datepicker").value;
-var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/metadata/train-types";
+var date = $("#datepicker").val();
+var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/trains/" + date;
 
 
 // jQuery ajax is used to get trains by date
@@ -78,15 +79,16 @@ $("get-trains-by-date-button").click(function(){
 	$.ajax({
 		url: trainsByDateUrl,
 		success: function(result){
-  	$("#trains-result").html(result);
+  			$("#trains-result").html(result);
 	}});
 });
 
 
-// Get stations list from rata.digitraffic.fi and show them in dropdownlist (two dropdownlists for departure and arrive)
+// Get train types from rata.digitraffic.fi and show them in table
 
+var trainTypeUrl = "https://rata.digitraffic.fi/api/v1/metadata/train-types";
 var xmlhttpTrains = new XMLHttpRequest();
-xmlhttpTrains.open("GET", trainsByDateUrl, true);
+xmlhttpTrains.open("GET", trainTypeUrl, true);
 xmlhttpTrains.send();
 
 xmlhttpTrains.onreadystatechange = function() {
