@@ -27,12 +27,12 @@
 
 			// Loop through JSON data array and all data will be collected to stationOut variable
 			var stationOut = "<form>";
-			stationOut += '<select>';
+			stationOut += '<select id="departure-station-ddl">';
 
 			for (var i=0; i < stationDataDeparture.length; i++) {
 
 				// Each loop round will create a new option for select tag and append to stationOut variable
-				stationOut += '<option  id="departure-station">' + stationDataDeparture[i].stationShortCode + " " + stationDataDeparture[i].stationName + '</option>';
+				stationOut += '<option>' + stationDataDeparture[i].stationShortCode + " " + stationDataDeparture[i].stationName + '</option>';
 			}
 
 			stationOut += '</select>';
@@ -44,11 +44,11 @@
 
 			// Loop through JSON data array and all data will be collected to stationOut variable
 			var stationOut = "<form>";
-			stationOut += '<select>';
+			stationOut += '<select id="arrive-station-ddl">';
 
 			for (var i=0; i < stationDataArrive.length; i++) {
 				// Each loop round will create a new option for select tag and append to stationOut variable
-				stationOut += '<option  id="arrive-station">' + stationDataArrive[i].stationShortCode + " " + stationDataArrive[i].stationName + '</option>';
+				stationOut += '<option>' + stationDataArrive[i].stationShortCode + " " + stationDataArrive[i].stationName + '</option>';
 			}
 
 			stationOut += '</select>';
@@ -56,6 +56,38 @@
 
 			document.getElementById("station-data-arrive").innerHTML = stationOut;
 	}
+}
+
+var departureStation = document.getElementById("departure-station-ddl");
+var selectedDepartureStation = departureStation.options[departureStation.selectedIndex].text;
+var arriveStation = document.getElementById("arrive-station-ddl");
+var selectedArriveStation = arriveStation.options[arriveStation.selectedIndex].text;
+var urlTrains = "https://rata.digitraffic.fi/api/v1/live-trains/station/" + selectedDepartureStation + "/" + selectedArriveStation +
+"?include_nonstopping=false&limit=1";
+
+var xmlhttpTrains = new XMLHttpRequest();
+xmlhttpTrains.open("GET", urlTrains, true);
+xmlhttpTrains.send();
+
+function searchTrains() {
+	// Receive the response as JSON and parse it into a variable
+	jsonTrains = JSON.parse(xmlhttpTrains.responseText);
+
+	// Store in data variable
+	var trainData = jsonTrains;
+
+	// Loop through JSON data array and all data will be collected to variable
+	var trainOut = "<ul>";
+
+	for (var i=0; i < trainData.length; i++) {
+
+		// Each loop round will create a new option for select tag and append to variable
+		trainOut += '<li>' + trainData[i].trainNumber + '</li>';
+	}
+
+	trainOut += '</ul>';
+
+	document.getElementById("trains-list").innerHTML = stationOut;
 }
 
 
@@ -159,6 +191,12 @@ xmlhttpTrains.onreadystatechange = function() {
 					<form>
 						<input id="get-trains-button" type="button" value="Search">
 					</form>
+				</div>
+			</div>
+		</div>
+		<div>
+			<div class="col-xs">
+				<div id="trains-list">
 				</div>
 			</div>
 		</div>
