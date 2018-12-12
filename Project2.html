@@ -11,27 +11,27 @@
 
 	// Get stations list from rata.digitraffic.fi and show them in dropdownlist (two dropdownlists for departure and arrive)
 
+	// Save url into variable
 	var urlStations = "https://rata.digitraffic.fi/api/v1/metadata/stations";
+	// Create an instance of XMLHttpRequest object
 	var xmlhttpStations = new XMLHttpRequest();
+	// Define request
 	xmlhttpStations.open("GET", urlStations, true);
+	// Send request
 	xmlhttpStations.send();
 
 	xmlhttpStations.onreadystatechange = function() {
 		if (xmlhttpStations.readyState == 4 && xmlhttpStations.status == 200) {
-
-			// Receive the response as JSON and parse it into a JS variable
+			// Parse received data
 			jsonStations = JSON.parse(xmlhttpStations.responseText);
-
-			// Store in data variable
+			// Store data in variable
 			var stationDataDeparture = jsonStations;
-
-			// Loop through JSON data array and all data will be collected to stationOut variable
+			// Show data in dropdown list
 			var stationOut = "<form>";
 			stationOut += '<select id="departure-station-ddl">';
 
 			for (var i=0; i < stationDataDeparture.length; i++) {
-
-				// Each loop round will create a new option for select tag and append to stationOut variable
+				// Each loop round will create a new option for select tag
 				stationOut += '<option>' + stationDataDeparture[i].stationShortCode + " " + stationDataDeparture[i].stationName + '</option>';
 			}
 
@@ -42,12 +42,10 @@
 
 			var stationDataArrive = jsonStations;
 
-			// Loop through JSON data array and all data will be collected to stationOut variable
 			var stationOut = "<form>";
 			stationOut += '<select id="arrive-station-ddl">';
 
 			for (var i=0; i < stationDataArrive.length; i++) {
-				// Each loop round will create a new option for select tag and append to stationOut variable
 				stationOut += '<option>' + stationDataArrive[i].stationShortCode + " " + stationDataArrive[i].stationName + '</option>';
 			}
 
@@ -55,101 +53,97 @@
 			stationOut += "</form>";
 
 			document.getElementById("station-data-arrive").innerHTML = stationOut;
-	}
-}
-
-var departureStation = document.getElementById("departure-station-ddl");
-var selectedDepartureStation = departureStation.options[departureStation.selectedIndex].text;
-var arriveStation = document.getElementById("arrive-station-ddl");
-var selectedArriveStation = arriveStation.options[arriveStation.selectedIndex].text;
-var urlTrains = "https://rata.digitraffic.fi/api/v1/live-trains/station/" + selectedDepartureStation + "/" + selectedArriveStation +
-"?include_nonstopping=false&limit=1";
-
-var xmlhttpTrains = new XMLHttpRequest();
-xmlhttpTrains.open("GET", urlTrains, true);
-xmlhttpTrains.send();
-
-function searchTrains() {
-	// Receive the response as JSON and parse it into a variable
-	jsonTrains = JSON.parse(xmlhttpTrains.responseText);
-
-	// Store in data variable
-	var trainData = jsonTrains;
-
-	// Loop through JSON data array and all data will be collected to variable
-	var trainOut = "<ul>";
-
-	for (var i=0; i < trainData.length; i++) {
-
-		// Each loop round will create a new option for select tag and append to variable
-		trainOut += '<li>' + trainData[i].trainNumber + '</li>';
+		}
 	}
 
-	trainOut += '</ul>';
+	function searchTrains() {
+		// Get chosen stations (live-trains api uses shortcodes)
+		var departureStation = document.getElementById("departure-station-ddl").value.substring(0, 3)
+		var arriveStation = document.getElementById("arrive-station-ddl").value.substring(0, 3)
+		// Save url into variable
+		var trainsUrl = "https://rata.digitraffic.fi/api/v1/live-trains/station/" + departureStation + "/" + arriveStation;
+		// Create an instance of XMLHttpRequest object
+		var xmlhttpTrains = new XMLHttpRequest();
+		// Define request
+		xmlhttpTrains.open("GET", trainsUrl, true);
+		// Send request
+		xmlhttpTrains.send();
 
-	document.getElementById("trains-list").innerHTML = stationOut;
-}
+		xmlhttpTrains.onreadystatechange = function() {
+			if (xmlhttpTrains.readyState == 4 && xmlhttpTrains.status == 200) {
+				// Parse received data
+				jsonTrains = JSON.parse(xmlhttpTrains.responseText);
+				// Store data in variable
+				var trainData = jsonTrains;
+
+				// Loop json data to catch duplicates
+				var trains = {};
+				for (var i = 0; i < trainData.length; i++) {
+					var result = trainData[i];
+					var commuterLineId = trainData.commuterLineID;
+					if (!(commuterLineId in trains)) {
+						trains[commuterLineId] = {};
+					}
+				}
+
+				var keys = [];
+				for (var i = 0; i < trainData.length; i++) {
+    		var n = trainData[i].commuterLineID;
+    		if (keys.indexOf(n) == -1)
+        	keys.push(n);
+				}
+				// Show trimmed data in table
+				var data = "<table><tr><th>CommuterLineId&nbsp&nbsp&nbsp&nbsp</th>";
+				for (var i = 0; i < keys.length; i++)
+    		data += "<td>" + keys[i] + "&nbsp&nbsp&nbsp&nbsp</td>";
+				data += "</tr>";				}
+
+				data += "</table>";
+
+				// Table below works but it is commented because it shows all the commuter line ids, also duplicates
+
+				//var trainOut = "<table>";
+
+				//for (var i=0; i < trainData.length; i++) {
+					//trainOut += "<tr>";
+					//trainOut += "<td>" + trainData[i].departureDate + "</td>";
+					//trainOut += "<td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>";
+					//trainOut += "<td>" + trainData[i].commuterLineID + "</td>";
+					//trainOut += "<td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>";
+					//trainOut += "<td>" + trainData[i].trainCategory + "</td>";
+					//trainOut += "</tr>";
+				//}
+
+				//trainOut += "</table>";
+
+				document.getElementById("commuter-line-id-table").innerHTML = data //trainOut;
+
+		}
+	}
+
+	// jQuery datepicker and today's date is default
+
+	$( function() {
+		$("#datepicker").datepicker().datepicker("setDate", new Date());
+	} );
 
 
-// jQuery datepicker and today's date is default
+	// Pick chosen date and use in url BUT IT DOESN'T WORK AND I CAN'T FIND THE REASON WHY
 
-$( function() {
-	$("#datepicker").datepicker().datepicker("setDate", new Date());
-} );
-
-
-// Pick chosen date and use in url BUT IT DOESN'T WORK AND I CAN'T FIND THE REASON WHY
-
-//var date = document.getElementById("datepicker").value;
-var date = $("#datepicker").val();
-var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/trains/" + date;
+	//var date = document.getElementById("datepicker").value;
+	var date = $("#datepicker").val();
+	var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/trains/" + date;
 
 
-// jQuery ajax is used to get trains by date
+	// jQuery ajax is used to get trains by date
 
-$("get-trains-by-date-button").click(function(){
-	$.ajax({
-		url: trainsByDateUrl,
-		success: function(result){
+	$("get-trains-by-date-button").click(function(){
+		$.ajax({
+			url: trainsByDateUrl,
+			success: function(result){
   			$("#trains-result").html(result);
-	}});
-});
-
-
-// Get train types from rata.digitraffic.fi and show them in table
-
-var trainTypeUrl = "https://rata.digitraffic.fi/api/v1/metadata/train-types";
-var xmlhttpTrains = new XMLHttpRequest();
-xmlhttpTrains.open("GET", trainTypeUrl, true);
-xmlhttpTrains.send();
-
-xmlhttpTrains.onreadystatechange = function() {
-	if (xmlhttpTrains.readyState == 4 && xmlhttpTrains.status == 200) {
-
-		// Receive the response as JSON and parse it into a JS variable
-		jsonTrains = JSON.parse(xmlhttpTrains.responseText);
-
-		// Store in data variable
-		var trainData = jsonTrains;
-
-		// Loop through JSON data array and all data will be collected to stationOut variable
-		var trainOut = "<table>";
-
-		for (var i=0; i < trainData.length; i++) {
-
-			// Each loop round will create a new option for tr and td tags and append to stationOut variable
-			trainOut += '<tr>';
-			trainOut += '<td>' + trainData[i].name + '</td>';
-			trainOut += '<td>&nbsp;&nbsp;&nbsp;&nbsp;</td>'
-			trainOut += '<td>' + trainData[i].trainCategory.name + '</td>';
-			trainOut += '</tr>';
-		}
-
-		trainOut += "</table>";
-
-		document.getElementById("trains-data").innerHTML = trainOut;
-		}
-	}
+		}});
+	});
 
 </script>
 </head>
@@ -169,43 +163,45 @@ xmlhttpTrains.onreadystatechange = function() {
 	<div class="container">
 	<div class="page-header">
 		<div class="row">
-			<div class="col-xs-6">
+			<div>
 				<div>
-					<div class="col-xs">
+					<div class="col-md" style="padding: 20px">
 					</div>
 				</div>
 				<div>
 					<h4><b>List of train stations <small> - there was meant to be a search where you can find trains operating between
-					chosen stations but I can't save (stations) values into js variable.</small></b></h4>
+					chosen stations but I cannot save (stations) values into js variable.</small></b></h4>
 					<div id="station-data-departure">
-						<div class="col-xs">
+						<div class="col-md" style="padding: 20px">
 						</div>
 					</div>
 				</div>
 				<div id="station-data-arrive">
-					<div class="col-xs">
+					<div class="col-md" style="padding: 20px">
 					</div>
 				</div>
 			<div>
-				<div class="col-xs">
-					<form>
-						<input id="get-trains-button" type="button" value="Search">
-					</form>
+				<div>
+						<input id="search-trains-button" value="Search trains" type="button" onclick="searchTrains()">
 				</div>
 			</div>
 		</div>
+	</div>
+	<div class="row">
 		<div>
-			<div class="col-xs">
-				<div id="trains-list">
+			<div class="col-md" style="padding: 20px">
+				<p>When the search is ready, in table below you can see all the trains commuting between chosen stations.
+					<small>Please notice that the search takes some time. Thanks!</small></p>
+				<div id="commuter-line-id-table">
 				</div>
 			</div>
 		</div>
 		<div class="row">
 			<div>
-				<div class="col-xs">
+				<div class="col-md" style="padding: 20px">
 					<div id="content">
 						<h4><b>Search trains by date <small> - there was meant to be a search where you can find trains operating at chosen
-						time but I can't save the (date) value into js variable.</small></b></h4>
+						time but I cannot save the (date) value into js variable.</small></b></h4>
 						<label>Choose date: </label>
 						<input type="text" id="datepicker">
 						<input id="get-trains-by-date-button" type="button" value="Search trains by date">
@@ -213,7 +209,7 @@ xmlhttpTrains.onreadystatechange = function() {
 				</div>
 			</div>
 			<div>
-				<div class="col-xs">
+				<div class="col-md" style="padding: 20px">
 					<div id="trains-result">
 					</div>
 				</div>
