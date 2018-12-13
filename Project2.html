@@ -130,26 +130,52 @@
 	// jQuery datepicker and today's date is default
 
 	$( function() {
-		$("#datepicker").datepicker().datepicker("setDate", new Date());
+		$("#datepicker").datepicker({
+			dateFormat: "yy-mm-dd"
+		}).datepicker("setDate", new Date());
 	} );
 
 
-	// Pick chosen date and use in url BUT IT DOESN'T WORK AND I CAN'T FIND THE REASON WHY
+	function searchTrainsByDate() {
+		// Get chosen stations (live-trains api uses shortcodes)
+		var date = document.getElementById("datepicker").value;
+		// Save url into variable
+		var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/trains/" + date;
+		// Create an instance of XMLHttpRequest object
+		var xmlhttpTrainsByDate = new XMLHttpRequest();
+		// Define request
+		xmlhttpTrainsByDate.open("GET", trainsByDateUrl, true);
+		// Send request
+		xmlhttpTrainsByDate.send();
 
-	//var date = document.getElementById("datepicker").value;
-	var date = $("#datepicker").val();
-	var trainsByDateUrl = "https://rata.digitraffic.fi/api/v1/trains/" + date;
+		xmlhttpTrainsByDate.onreadystatechange = function() {
+			if (xmlhttpTrainsByDate.readyState == 4 && xmlhttpTrainsByDate.status == 200) {
+				// Parse received data
+				jsonTrainsByDate = JSON.parse(xmlhttpTrainsByDate.responseText);
+				// Store data in variable
+				var trainsByDateData = jsonTrainsByDate;
 
+				var trainsByDateOut = "<table>";
 
-	// jQuery ajax is used to get trains by date
+				for (var i = 0; i < trainsByDateData.length; i++) {
+					trainsByDateOut += "<tr>";
+					trainsByDateOut += "<td>" + trainsByDateData[i].trainType + "</td>";
+					trainsByDateOut += "<td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>";
+					trainsByDateOut += "<td>" + trainsByDateData[i].trainCategory + "</td>";
+					trainsByDateOut += "<td>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</td>";
+					trainsByDateOut += "<td>" + trainsByDateData[i].commuterLineID + "</td>";
+					trainsByDateOut += "</tr>";
+				}
 
-	$("get-trains-by-date-button").click(function(){
-		$.ajax({
-			url: trainsByDateUrl,
-			success: function(result){
-  			$("#trains-result").html(result);
-		}});
-	});
+				trainsByDateOut += "</table>";
+
+				document.getElementById("trains-by-date-table").innerHTML = trainsByDateOut;
+			}
+		}
+	}
+			//}
+		//}
+	//}
 
 </script>
 </head>
@@ -171,8 +197,10 @@
 		<div class="row">
 			<div>
 				<div>
-					<h4><b>List of train stations <small> - there was meant to be a search where you can find trains operating between
-					chosen stations but I cannot save (stations) values into js variable.</small></b></h4>
+					<h4><b>Search trains</b></h4>
+					<h4><b><small>Choose departure station and arrive station and then click Search trains.
+					It might take some time but eventually below appears a list of commuter lines that commutes between chosen stations.
+					There is also a swap feature if you want to change station values.</small></b></h4>
 					<div class="col-md" style="padding: 20px">
 						<label>Departure station: </label>
 						<div id="station-data-departure">
@@ -192,8 +220,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md" style="padding: 20px">
-				<p>When the search is ready, in table below you can see all the trains commuting between chosen stations.
-					<small>Please notice that the search takes some time. Thanks!</small></p>
+				<p>When the search is ready, you can see all the trains commuting between chosen stations in the table below.</p>
 				<div id="commuter-line-id-table" class="col-md" style="padding: 20px">
 				</div>
 			</div>
@@ -202,25 +229,22 @@
 			<div>
 				<div class="col-md" style="padding: 20px">
 					<div id="content">
-						<h4><b>Search trains by date <small> - there was meant to be a search where you can find trains operating at chosen
-						time but I cannot save the (date) value into js variable.</small></b></h4>
+						<h4><b>Search trains by date</b></h4>
+						<h4><b><small>Choose date and click Search train by date. It might take some time but eventually below appears a list
+						of trains operating at chosen date.</small></b></h4>
 						<label>Choose date: </label>
 						<input type="text" id="datepicker">
-						<input id="get-trains-by-date-button" type="button" value="Search trains by date">
+						<input id="get-trains-by-date-button" type="button" value="Search trains by date" onclick="searchTrainsByDate()">
 					</div>
 				</div>
 			</div>
 			<div>
 				<div class="col-md" style="padding: 20px">
-					<div id="trains-result">
+					<p>When the search is ready, you can see in first column operating train type. Train category is shown in second column and
+					commuter line id is shown in third column. The list is long because I first removed duplicates but it didn't look that good.
+					 (Though this doesn't either.)</p>
+					<div id="trains-by-date-table">
 					</div>
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div>
-				<h4><b>Train types list <small> - lists any train types that are used at the moment</small></b></h4>
-				<div id="trains-data">
 				</div>
 			</div>
 		</div>
