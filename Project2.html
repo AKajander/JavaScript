@@ -56,6 +56,12 @@
 		}
 	}
 
+	function swapValues() {
+		var firstValue = document.getElementById("departure-station-ddl").value;
+		document.getElementById("departure-station-ddl").value = document.getElementById("arrive-station-ddl").value;
+		document.getElementById("arrive-station-ddl").value = firstValue;
+	}
+
 	function searchTrains() {
 		// Get chosen stations (live-trains api uses shortcodes)
 		var departureStation = document.getElementById("departure-station-ddl").value.substring(0, 3)
@@ -165,34 +171,30 @@
 		<div class="row">
 			<div>
 				<div>
-					<div class="col-md" style="padding: 20px">
-					</div>
-				</div>
-				<div>
 					<h4><b>List of train stations <small> - there was meant to be a search where you can find trains operating between
 					chosen stations but I cannot save (stations) values into js variable.</small></b></h4>
-					<div id="station-data-departure">
-						<div class="col-md" style="padding: 20px">
+					<div class="col-md" style="padding: 20px">
+						<label>Departure station: </label>
+						<div id="station-data-departure">
 						</div>
 					</div>
 				</div>
-				<div id="station-data-arrive">
-					<div class="col-md" style="padding: 20px">
+				<div class="col-md" style="padding: 20px">
+					<label>Arrive station: </label>
+					<div id="station-data-arrive">
 					</div>
 				</div>
-			<div>
-				<div>
-						<input id="search-trains-button" value="Search trains" type="button" onclick="searchTrains()">
+				<div class="col-md" style="padding: 20px">
+					<input id="swap-stations-button" value="Swap values" type="button" onclick="swapValues()">
+					<input id="search-trains-button" value="Search trains" type="button" onclick="searchTrains()">
 				</div>
 			</div>
 		</div>
-	</div>
-	<div class="row">
-		<div>
+		<div class="row">
 			<div class="col-md" style="padding: 20px">
 				<p>When the search is ready, in table below you can see all the trains commuting between chosen stations.
 					<small>Please notice that the search takes some time. Thanks!</small></p>
-				<div id="commuter-line-id-table">
+				<div id="commuter-line-id-table" class="col-md" style="padding: 20px">
 				</div>
 			</div>
 		</div>
